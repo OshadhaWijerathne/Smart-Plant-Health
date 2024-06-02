@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_login_auth_ui_main.streamlit_login_auth_ui.widgets import __login__
-from chatbot import chatbot_func
+#from chatbot import chatbot_func
+from chatbot import *
 from about import about_func
 
 __login__obj = __login__(auth_token = "courier_auth_token",
@@ -18,18 +19,22 @@ username= __login__obj.get_username()
 def main_page():
     st.markdown("# Main page 🎈")
     st.sidebar.markdown("# Main page 🎈")
+
+def chatbot_function():
+    chatbot_func(vectordb)   
+     
 def page3():
     st.markdown("# Page 3 🎉")
     st.sidebar.markdown("# Page 3 🎉")
 
+vectordb = prepare_db("Chroma_Vector_Store")
 
 page_names_to_funcs = {
     "Main Page": main_page,
-    "Chatbot": chatbot_func,
+    "Chatbot": chatbot_function,
     "About": about_func,
     "Page 3": page3,
 }
-
 
 
 if LOGGED_IN == True:
