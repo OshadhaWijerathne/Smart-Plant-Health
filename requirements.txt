@@ -7,3 +7,5 @@ chromadb
 tiktoken
 unstructured
 langchain_openai
+torchvision
+matplotlib
