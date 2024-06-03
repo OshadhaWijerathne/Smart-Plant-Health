@@ -40,7 +40,13 @@ def ask_from_llm(query_text: str, vectordb):
     #print(results)
     if len(results) == 0 or results[0][1] < 0.7:
         print(f"Unable to find matching results.")
-        return                   
+        #return "Unable to find matching results from the document provided.Give a suitable answer from your knowledge."
+        context_text = "Unable to find matching results from the document provided.Give a suitable answer from your knowledge."
+        prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+        prompt = prompt_template.format(context=context_text, question=query_text)    
+        model = ChatOpenAI()
+        response_text = model.invoke(prompt)    
+        return response_text      
 
     prompt = generate_prompt(results, query_text)
     #print(prompt)
@@ -58,7 +64,7 @@ def chatbot_func(vectordb):
     st.markdown("# Chatbot 🤖")
     st.sidebar.markdown("# Chatbot 🤖")
     st.write("Chatbot is under construction")
-
+    """
     form_input = st.text_input('Enter Question')
     submit = st.button("Ask")
 
@@ -66,3 +72,29 @@ def chatbot_func(vectordb):
         #st.write(form_input)  Diseases of Citrus
         result = ask_from_llm(form_input, vectordb)
         st.write(result.content)
+    """
+    ###############################################################################################
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Accept user input
+    if prompt := st.chat_input("What do you need help with?"):
+
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        
+        # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            result = ask_from_llm(prompt, vectordb)
+            st.markdown(result.content)
+        st.session_state.messages.append({"role": "assistant", "content": result.content})        
